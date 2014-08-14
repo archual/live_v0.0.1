@@ -5,6 +5,7 @@
     <title>Игра жизнь - начало</title>
     <script type="text/javascript" src="libs/jquery-1.9.0.js"></script>
     <script type="text/javascript" src="libs/three.js"></script>
+    <script type="text/javascript" src="libs/stats.min.js"></script>
     <style>
         body{
             /* set margin to 0 and overflow to hidden,
@@ -19,13 +20,24 @@
     <!--<h1>Игра жизнь - начало</h1>-->
     <!--<p>Это будет игра жизнь</p>-->
     <!-- Div which will hold the Output -->
-    <div id="WebGL-output">
-    </div>
+    <div id="WebGL-output"></div>
+    <div id="Stats-output"></div>
     <!-- Javascript code that runs our Three.js examples -->
     <script type="text/javascript">
         // once everything is loaded, we run our Three.js stuff.
         (function($){
             $(document).ready(function () {
+                function initStats() {
+                    var stats = new Stats();
+                    stats.setMode(0);
+                    stats.domElement.style.position = 'absolute';
+                    stats.domElement.style.left = '0px';
+                    stats.domElement.style.top = '0px';
+                    $("#Stats-output").append( stats.domElement );
+                    return stats;
+                }
+
+                var stats = initStats();
                 var scene = new THREE.Scene();
                 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
                 var renderer = new THREE.WebGLRenderer();
@@ -75,7 +87,26 @@
                 camera.lookAt(scene.position);
 
                 $("#WebGL-output").append(renderer.domElement);
-                renderer.render(scene, camera);
+                renderScene();
+
+                var step=0;
+
+                function renderScene() {
+                    stats.update();
+
+                    cube.rotation.x += 0.02;
+                    cube.rotation.y += 0.02;
+                    cube.rotation.z += 0.02;
+
+                    step+=0.04;
+                    sphere.position.x = 20+( 10*(Math.cos(step)));
+                    sphere.position.y = 2 +( 10*Math.abs(Math.sin(step)));
+
+                    requestAnimationFrame(renderScene)
+                    renderer.render(scene, camera);
+                }
+
+
             });
         })(jQuery);
 
